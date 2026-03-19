@@ -1,0 +1,22 @@
+{
+  "mutran.key.category": "Mu's Translate",
+  "mutran.key.open_gui": "Open gui",
+
+  "mutran.configuration.enable_translation": "Enable translation",
+  "mutran.configuration.enable_translation.tooltip": "Is translation enable",
+  "mutran.configuration.chat_replacement_mode": "Chat replacement mode",
+  "mutran.configuration.chat_replacement_mode.tooltip": "If enable, the origin chats will not display",
+  "mutran.configuration.translation_provider": "Translation provider",
+  "mutran.configuration.translation_provider.tooltip": "Choose your translation provider\nNow accept:\nYOUDAO:YouDao Translation",
+  "mutran.configuration.api_key": "Api Key",
+  "mutran.configuration.api_key.tooltip": "Your api key",
+  "mutran.configuration.api_secret": "Api Secret",
+  "mutran.configuration.api_secret.tooltip": "Your api secret",
+  "mutran.configuration.translation_provider.enum.youdao": "Youdao Translation",
+  "mutran.configuration.title": "Mu's Translate",
+  "mutran.configuration.section.mutran.common.toml": "Mu's Translate | Settings",
+  "mutran.configuration.section.mutran.common.toml.title": "Mu's Translate | Settings",
+
+  "mutran.error.cant_translate": "Translation error, please check that your profile is typed correctly"
+
+}

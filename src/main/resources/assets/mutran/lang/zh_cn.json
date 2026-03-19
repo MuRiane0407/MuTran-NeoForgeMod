@@ -1,0 +1,21 @@
+{
+  "mutran.key.category": "沐星翻译",
+  "mutran.key.open_gui": "打开菜单",
+
+  "mutran.configuration.enable_translation": "启用翻译",
+  "mutran.configuration.enable_translation.tooltip": "是否启用翻译",
+  "mutran.configuration.chat_replacement_mode": "聊天替换模式",
+  "mutran.configuration.chat_replacement_mode.tooltip": "若启用，则不会显示原文本",
+  "mutran.configuration.translation_provider": "翻译源",
+  "mutran.configuration.translation_provider.tooltip": "选择你的翻译源\n目前支持:\nYOUDAO:有道翻译",
+  "mutran.configuration.api_key": "Api Key",
+  "mutran.configuration.api_key.tooltip": "你的ApiKey",
+  "mutran.configuration.api_secret": "Api 密钥",
+  "mutran.configuration.api_secret.tooltip": "你的Api密钥",
+  "mutran.configuration.translation_provider.enum.youdao": "有道翻译",
+  "mutran.configuration.title": "沐星翻译",
+  "mutran.configuration.section.mutran.common.toml": "沐星翻译 | 设置",
+  "mutran.configuration.section.mutran.common.toml.title": "沐星翻译 | 设置",
+
+  "mutran.error.cant_translate": "翻译错误，请检查你的配置文件是否键入正确"
+}
