@@ -1,21 +1,41 @@
 {
   "mutran.key.category": "沐星翻译",
   "mutran.key.open_gui": "打开菜单",
+  "mutran.key.item_translate": "翻译物品",
 
-  "mutran.configuration.enable_translation": "启用翻译",
-  "mutran.configuration.enable_translation.tooltip": "是否启用翻译",
-  "mutran.configuration.chat_replacement_mode": "聊天替换模式",
-  "mutran.configuration.chat_replacement_mode.tooltip": "若启用，则不会显示原文本",
+  "mutran.item_translation.translation_info.extend": "翻译结果:",
+
+  "mutran.configuration.enable_translation_main": "启用翻译",
+  "mutran.configuration.enable_translation_main.tooltip": "是否启用翻译",
+  "mutran.configuration.auto_detect_language": "检测语言",
+  "mutran.configuration.auto_detect_language.tooltip": "是否启用语言自动检测",
+  "mutran.configuration.from_language": "源语言",
+  "mutran.configuration.from_language.tooltip": "从什么语言翻译",
+  "mutran.configuration.to_language": "目标语言",
+  "mutran.configuration.to_language.tooltip": "翻译成什么语言",
   "mutran.configuration.translation_provider": "翻译源",
-  "mutran.configuration.translation_provider.tooltip": "选择你的翻译源\n目前支持:\nYOUDAO:有道翻译",
-  "mutran.configuration.api_key": "Api Key",
-  "mutran.configuration.api_key.tooltip": "你的ApiKey",
-  "mutran.configuration.api_secret": "Api 密钥",
-  "mutran.configuration.api_secret.tooltip": "你的Api密钥",
-  "mutran.configuration.translation_provider.enum.youdao": "有道翻译",
+  "mutran.configuration.translation_provider.tooltip": "选择你的翻译源\n目前支持:\nYoudao:有道翻译\nBaidu:百度翻译",
+  "mutran.configuration.app_id": "应用ID",
+  "mutran.configuration.app_id.tooltip": "你的应用ID",
+  "mutran.configuration.app_secret": "应用密钥",
+  "mutran.configuration.app_secret.tooltip": "你的应用密钥",
+
+  "mutran.configuration.enable_translation_chat": "启用聊天翻译",
+  "mutran.configuration.enable_translation_chat.tooltip": "是否启用聊天翻译",
+  "mutran.configuration.chat_translation_display_mode": "聊天翻译显示模式",
+  "mutran.configuration.chat_translation_display_mode.tooltip": "如何显示聊天翻译",
+
+  "mutran.configuration.enable_translation_item": "启用物品翻译",
+  "mutran.configuration.enable_translation_item.tooltip": "是否启用物品翻译",
+  "mutran.configuration.item_translation_display_mode": "物品翻译显示模式",
+  "mutran.configuration.item_translation_display_mode.tooltip": "如何显示物品翻译",
+
   "mutran.configuration.title": "沐星翻译",
   "mutran.configuration.section.mutran.common.toml": "沐星翻译 | 设置",
   "mutran.configuration.section.mutran.common.toml.title": "沐星翻译 | 设置",
+
+  "mutran.configuration.translation_provider.enum.youdao": "有道翻译",
+  "mutran.configuration.translation_provider.enum.baidu": "百度翻译",
 
   "mutran.error.cant_translate": "翻译错误，请检查你的配置文件是否键入正确"
 }

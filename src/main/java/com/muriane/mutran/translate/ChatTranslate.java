@@ -20,13 +20,13 @@ public class ChatTranslate {
     public static class ChatTranslateHolder{
         @SubscribeEvent
         public static void ReceiveChat(ClientChatReceivedEvent event){
-            if (Config.COMMON.ENABLE_TRANSLATION.get()){
+            if (Config.COMMON.ENABLE_TRANSLATION_MAIN.get() && Config.COMMON.ENABLE_TRANSLATION_CHAT.get()){
                 if (event.isSystem()){
                     return;
                 }else{
                     if (Minecraft.getInstance().level != null){
                         // 如果启用了聊天替换，则直接不显示原文
-                        if (Config.COMMON.CHAT_REPLACEMENT_MODE.get()){
+                        if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Replace){
                             event.setCanceled(true);
                         }
 
@@ -35,20 +35,18 @@ public class ChatTranslate {
                         Style chat_style = components.getLast().getStyle();
                         translateAsync(chat,
                                 result -> {
-                                if (Minecraft.getInstance().player != null) {
-                                    if (result != null){
-                                        MutableComponent component = Component.literal("");
-                                        for (int index = 0 ; index < components.size()-1 ; index++) component.append(components.get(index));
-                                        component.append(Component.literal(result).setStyle(chat_style));
+                                    if (Minecraft.getInstance().player != null) {
+                                        if (result != null){
+                                            MutableComponent component = Component.literal("");
+                                            for (int index = 0 ; index < components.size()-1 ; index++) component.append(components.get(index));
+                                            component.append(Component.literal(result).setStyle(chat_style));
 
-                                        Minecraft.getInstance().player.sendSystemMessage(component);
-                                    }else{
-                                        Minecraft.getInstance().player.sendSystemMessage(Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454));
+                                            Minecraft.getInstance().player.sendSystemMessage(component);
+                                        }else{
+                                            Minecraft.getInstance().player.sendSystemMessage(Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454));
+                                        }
                                     }
-
-                                }
-                            }
-                        );
+                        });
                     }
                 }
             }else{
@@ -67,7 +65,7 @@ public class ChatTranslate {
     // 异步翻译文本
     public static void translateAsync(String text, TranslationCallback callback) {
         TRANSLATION_POOL.submit(() -> {
-            String result = Translator.translate(text, "auto", "zh-CHS");
+            String result = Translator.translate(text);
             // 回到主线程执行回调
             Minecraft.getInstance().execute(() -> callback.onComplete(result));
         });
