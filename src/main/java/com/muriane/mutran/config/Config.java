@@ -1,8 +1,6 @@
 package com.muriane.mutran.config;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -31,9 +29,14 @@ public class Config {
         // item
         public final ModConfigSpec.BooleanValue ENABLE_TRANSLATION_ITEM;
         public final ModConfigSpec.EnumValue<ItemTranslationDisplayMode> ITEM_TRANSLATION_DISPLAY_MODE;
+        public final ModConfigSpec.EnumValue<ItemTranslationSaveMode> ITEM_TRANSLATION_SAVE_MODE;
+        // book
+        public final ModConfigSpec.BooleanValue ENABLE_TRANSLATION_BOOK;
+        public final ModConfigSpec.EnumValue<BookTranslationDisplayMode> BOOK_TRANSLATION_DISPLAY_MODE;
 
         Common(ModConfigSpec.Builder builder){
             // main
+            builder.push("main_options");
             ENABLE_TRANSLATION_MAIN = builder
                     .comment("Whether translation is enabled")
                     .translation("mutran.configuration.enable_translation_main")
@@ -54,6 +57,10 @@ public class Config {
                     .comment("Choose your translation provider")
                     .translation("mutran.configuration.translation_provider")
                     .defineEnum("translation_provider", TranslationProvider.Youdao);
+            builder.pop();
+
+            // app
+            builder.push("app_options");
             APP_ID = builder
                     .comment("The app id your translation provider need")
                     .translation("mutran.configuration.app_id")
@@ -62,8 +69,10 @@ public class Config {
                     .comment("The app secret your translation provider need")
                     .translation("mutran.configuration.app_secret")
                     .define("app_secret", "");
+            builder.pop();
 
             // chat
+            builder.push("chat_options");
             ENABLE_TRANSLATION_CHAT = builder
                     .comment("Whether chat translation is enabled")
                     .translation("mutran.configuration.enable_translation_chat")
@@ -71,9 +80,11 @@ public class Config {
             CHAT_TRANSLATION_DISPLAY_MODE = builder
                     .comment("How to display chat translation")
                     .translation("mutran.configuration.chat_translation_display_mode")
-                    .defineEnum("chat_translation_display_mode", ChatTranslationDisplayMode.Extend);
+                    .defineEnum("chat_translation_display_mode", ChatTranslationDisplayMode.Follow);
+            builder.pop();
 
             // item
+            builder.push("item_options");
             ENABLE_TRANSLATION_ITEM = builder
                     .comment("Whether item translation is enabled")
                     .translation("mutran.configuration.enable_translation_item")
@@ -81,7 +92,24 @@ public class Config {
             ITEM_TRANSLATION_DISPLAY_MODE = builder
                     .comment("How to display item translation")
                     .translation("mutran.configuration.item_translation_display_mode")
-                    .defineEnum("item_translation_display_mode", ItemTranslationDisplayMode.Extend);
+                    .defineEnum("item_translation_display_mode", ItemTranslationDisplayMode.Follow);
+            ITEM_TRANSLATION_SAVE_MODE = builder
+                    .comment("Translation data saving mode")
+                    .translation("mutran.configuration.item_translation_save_mode")
+                    .defineEnum("item_translation_save_mode", ItemTranslationSaveMode.Permanent);
+            builder.pop();
+
+            // book
+            builder.push("book_options");
+            ENABLE_TRANSLATION_BOOK = builder
+                    .comment("Whether book translation is enabled")
+                    .translation("mutran.configuration.enable_translation_book")
+                    .define("enable_translation_book", false);
+            BOOK_TRANSLATION_DISPLAY_MODE = builder
+                    .comment("How to display book translation")
+                    .translation("mutran.configuration.book_translation_display_mode")
+                    .defineEnum("book_translation_display_mode", BookTranslationDisplayMode.Expand);
+            builder.pop();
         }
     }
 
@@ -135,36 +163,18 @@ public class Config {
     }
 
     public enum ChatTranslationDisplayMode {
-        Extend(0),
-        Replace(1);
-
-        private final int mode;
-
-        ChatTranslationDisplayMode(int mode) {
-            this.mode = mode;
-        }
-
-        public int getMode() {
-            return mode;
-        }
+        Follow, Replace, Expand
     }
 
     public enum ItemTranslationDisplayMode {
-        Extend(0),
-        Replace(1);
-
-        private final int mode;
-
-        ItemTranslationDisplayMode(int mode) {
-            this.mode = mode;
-        }
-
-        public int getMode() {
-            return mode;
-        }
+        Follow, Replace
     }
 
-    private static boolean validateItemName(final Object obj) {
-        return obj instanceof String itemName && BuiltInRegistries.ITEM.containsKey(ResourceLocation.parse(itemName));
+    public enum BookTranslationDisplayMode {
+        Expand
+    }
+
+    public enum ItemTranslationSaveMode {
+        Inventory, Server, Permanent
     }
 }

@@ -8,5 +8,10 @@
   },
   "overwrites": {
     "requireAnnotations": true
-  }
+  },
+  "client": [
+    "BookEditScreenMixinInterface",
+    "BookViewScreenMixinClass",
+    "BookViewScreenMixinInterface"
+  ]
 }

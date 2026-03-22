@@ -1,10 +1,19 @@
 {
   "mutran.key.category": "沐星翻译",
   "mutran.key.open_gui": "打开菜单",
-  "mutran.key.item_translate": "翻译物品",
+  "mutran.key.translate": "翻译",
 
-  "mutran.item_translation.translation_info.extend": "翻译结果:",
+  "mutran.button.translate": "译",
 
+  "mutran.translation.translation_info.translate": "[按[%s]翻译]",
+  "mutran.translation.translation_info.translating": "[翻译中...]",
+  "mutran.translation.translation_info.redo_key": "[按[%s]重新翻译]",
+  "mutran.translation.translation_info.redo_button": "[按按钮重新翻译]",
+  "mutran.translation.translation_info.expand": "[翻译结果]",
+
+  "mutran.configuration.main_options": "主要选项",
+  "mutran.configuration.main_options.button": "主要设置",
+  "mutran.configuration.main_options.tooltip": "设置翻译功能",
   "mutran.configuration.enable_translation_main": "启用翻译",
   "mutran.configuration.enable_translation_main.tooltip": "是否启用翻译",
   "mutran.configuration.auto_detect_language": "检测语言",
@@ -14,21 +23,41 @@
   "mutran.configuration.to_language": "目标语言",
   "mutran.configuration.to_language.tooltip": "翻译成什么语言",
   "mutran.configuration.translation_provider": "翻译源",
-  "mutran.configuration.translation_provider.tooltip": "选择你的翻译源\n目前支持:\nYoudao:有道翻译\nBaidu:百度翻译",
+  "mutran.configuration.translation_provider.tooltip": "选择你的翻译源\nYoudao:有道翻译\nBaidu:百度翻译",
+
+  "mutran.configuration.app_options": "应用选项",
+  "mutran.configuration.app_options.button": "应用设置",
+  "mutran.configuration.app_options.tooltip": "请注意不要在共享屏幕的情况下打开，以防泄露",
   "mutran.configuration.app_id": "应用ID",
   "mutran.configuration.app_id.tooltip": "你的应用ID",
   "mutran.configuration.app_secret": "应用密钥",
   "mutran.configuration.app_secret.tooltip": "你的应用密钥",
 
+  "mutran.configuration.chat_options": "聊天翻译选项",
+  "mutran.configuration.chat_options.button": "聊天翻译设置",
+  "mutran.configuration.chat_options.tooltip": "设置聊天翻译功能",
   "mutran.configuration.enable_translation_chat": "启用聊天翻译",
   "mutran.configuration.enable_translation_chat.tooltip": "是否启用聊天翻译",
   "mutran.configuration.chat_translation_display_mode": "聊天翻译显示模式",
-  "mutran.configuration.chat_translation_display_mode.tooltip": "如何显示聊天翻译",
+  "mutran.configuration.chat_translation_display_mode.tooltip": "如何显示聊天翻译\nFollow: 额外输出一条翻译结果\nReplace: 只输出翻译后的结果\nExpand: 同时输出原文和翻译",
 
+  "mutran.configuration.item_options": "物品翻译选项",
+  "mutran.configuration.item_options.button": "物品翻译设置",
+  "mutran.configuration.item_options.tooltip": "设置物品翻译功能",
   "mutran.configuration.enable_translation_item": "启用物品翻译",
   "mutran.configuration.enable_translation_item.tooltip": "是否启用物品翻译",
   "mutran.configuration.item_translation_display_mode": "物品翻译显示模式",
-  "mutran.configuration.item_translation_display_mode.tooltip": "如何显示物品翻译",
+  "mutran.configuration.item_translation_display_mode.tooltip": "如何显示物品翻译\nFollow: 将翻译结果附加在物品描述下方\nReplace: 将原文替换为翻译结果",
+  "mutran.configuration.item_translation_save_mode": "物品翻译数据保存模式",
+  "mutran.configuration.item_translation_save_mode.tooltip": "数据保存的模式，保存设置后立即重载\nInventory: 关闭物品栏后清除\nServer: 关闭存档/退出服务器后清除\nPermanent: 始终保存数据，不会在切换其他模式后被清除",
+
+  "mutran.configuration.book_options": "书本翻译选项",
+  "mutran.configuration.book_options.button": "书本翻译设置",
+  "mutran.configuration.book_options.tooltip": "设置书本翻译功能",
+  "mutran.configuration.enable_translation_book": "启用书本翻译",
+  "mutran.configuration.enable_translation_book.tooltip": "是否启用书本翻译",
+  "mutran.configuration.book_translation_display_mode": "书本翻译显示模式",
+  "mutran.configuration.book_translation_display_mode.tooltip": "如何显示书本翻译\nExpand: 在旁边显示翻译",
 
   "mutran.configuration.title": "沐星翻译",
   "mutran.configuration.section.mutran.common.toml": "沐星翻译 | 设置",
@@ -37,5 +66,6 @@
   "mutran.configuration.translation_provider.enum.youdao": "有道翻译",
   "mutran.configuration.translation_provider.enum.baidu": "百度翻译",
 
+  "mutran.error.info": "错误: ",
   "mutran.error.cant_translate": "翻译错误，请检查你的配置文件是否键入正确"
 }

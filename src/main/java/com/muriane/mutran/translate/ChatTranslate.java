@@ -11,9 +11,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientChatReceivedEvent;
 
+import java.awt.*;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
+import static com.muriane.mutran.translate.Translator.translateAsync;
 
 public class ChatTranslate {
     @EventBusSubscriber(modid = MusTranslate.MODID, value = Dist.CLIENT)
@@ -25,8 +26,7 @@ public class ChatTranslate {
                     return;
                 }else{
                     if (Minecraft.getInstance().level != null){
-                        // 如果启用了聊天替换，则直接不显示原文
-                        if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Replace){
+                        if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Replace || Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Expand){
                             event.setCanceled(true);
                         }
 
@@ -38,8 +38,17 @@ public class ChatTranslate {
                                     if (Minecraft.getInstance().player != null) {
                                         if (result != null){
                                             MutableComponent component = Component.literal("");
-                                            for (int index = 0 ; index < components.size()-1 ; index++) component.append(components.get(index));
-                                            component.append(Component.literal(result).setStyle(chat_style));
+                                            if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Follow){
+                                                component.append(Component.translatable("mutran.translation.translation_info.expand").withColor(Color.GRAY.getRGB()));
+                                                component.append(" ");
+                                                for (int index = 0 ; index < components.size()-1 ; index++) component.append(components.get(index));
+                                                component.append(Component.literal(result).setStyle(chat_style));
+                                            }else if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Expand){
+                                                component.append(event.getMessage());
+                                                component.append(" (");
+                                                component.append(Component.literal(result).setStyle(chat_style));
+                                                component.append(")");
+                                            }
 
                                             Minecraft.getInstance().player.sendSystemMessage(component);
                                         }else{
@@ -53,26 +62,5 @@ public class ChatTranslate {
                 return;
             }
         }
-    }
-
-    // 创建一个线程池处理翻译请求
-    private static final ExecutorService TRANSLATION_POOL = Executors.newCachedThreadPool(r -> {
-        Thread t = new Thread(r, "Translation Thread");
-        t.setDaemon(true);
-        return t;
-    });
-
-    // 异步翻译文本
-    public static void translateAsync(String text, TranslationCallback callback) {
-        TRANSLATION_POOL.submit(() -> {
-            String result = Translator.translate(text);
-            // 回到主线程执行回调
-            Minecraft.getInstance().execute(() -> callback.onComplete(result));
-        });
-    }
-
-    // 回调接口
-    public interface TranslationCallback {
-        void onComplete(String result);
     }
 }

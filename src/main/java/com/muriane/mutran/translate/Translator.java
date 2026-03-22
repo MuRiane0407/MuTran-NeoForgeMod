@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.muriane.mutran.config.Config;
+import net.minecraft.client.Minecraft;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -15,8 +16,31 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Translator {
+    // 创建一个线程池处理翻译请求
+    private static final ExecutorService TRANSLATION_POOL = Executors.newCachedThreadPool(r -> {
+        Thread t = new Thread(r, "Translation Thread");
+        t.setDaemon(true);
+        return t;
+    });
+
+    // 异步翻译文本
+    public static void translateAsync(String text, TranslationCallback callback) {
+        TRANSLATION_POOL.submit(() -> {
+            String result = Translator.translate(text);
+            // 回到主线程执行回调
+            Minecraft.getInstance().execute(() -> callback.onComplete(result));
+        });
+    }
+
+    // 回调接口
+    public interface TranslationCallback {
+        void onComplete(String result);
+    }
+
     public static String translate(String query){
         String result;
         if (Config.COMMON.TRANSLATION_PROVIDER.get() == Config.TranslationProvider.Youdao){
@@ -72,7 +96,7 @@ public class Translator {
 
             return youdaoParseResponse(response);
         } catch (Exception e) {
-            System.err.println("有道翻译失败: " + e.getMessage());
+            System.err.println("[mutran/WARN] 有道翻译失败: " + e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -85,7 +109,7 @@ public class Translator {
 
             String errorCode = json.get("errorCode").getAsString();
             if (!"0".equals(errorCode)) {
-                System.err.println("有道翻译返回错误码: " + errorCode);
+                System.err.println("[mutran/WARN] 有道翻译返回错误码: " + errorCode);
                 return null;
             }
 
@@ -93,7 +117,7 @@ public class Translator {
                 return json.getAsJsonArray("translation").get(0).getAsString();
             }
         } catch (Exception e) {
-            System.err.println("解析翻译结果失败: " + e.getMessage());
+            System.err.println("[mutran/WARN] 解析翻译结果失败: " + e.getMessage());
         }
         return null;
     }
@@ -133,7 +157,7 @@ public class Translator {
 
             return baiduParseResponse(response);
         } catch (Exception e) {
-            System.err.println("百度翻译失败: " + e.getMessage());
+            System.err.println("[mutran/WARN] 百度翻译失败: " + e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -147,7 +171,7 @@ public class Translator {
             if (errorCode != null) {
                 String errorCode_str = errorCode.getAsString();
                 String errorMessage_str = json.get("error_msg").getAsString();
-                System.err.println("百度翻译返回错误码: [" + errorCode_str + "] " + errorMessage_str);
+                System.err.println("[mutran/WARN] 百度翻译返回错误码: [" + errorCode_str + "] " + errorMessage_str);
                 return null;
             }
 
@@ -156,7 +180,7 @@ public class Translator {
                 return object.get("dst").getAsString();
             }
         } catch (Exception e) {
-            System.err.println("解析翻译结果失败: " + e.getMessage());
+            System.err.println("[mutran/WARN] 解析翻译结果失败: " + e.getMessage());
         }
         return null;
     }

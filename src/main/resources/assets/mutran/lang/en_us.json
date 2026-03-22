@@ -1,10 +1,19 @@
 {
   "mutran.key.category": "Mu's Translate",
   "mutran.key.open_gui": "Open gui",
-  "mutran.key.item_translate": "Translate item",
+  "mutran.key.translate": "Translate",
 
-  "mutran.item_translation.translation_info.extend": "Translation result:",
+  "mutran.button.translate": "T",
 
+  "mutran.translation.translation_info.translate": "[Press [%s] to translate]",
+  "mutran.translation.translation_info.translating": "[Translating...]",
+  "mutran.translation.translation_info.redo_key": "[Press [%s] to retranslate]",
+  "mutran.translation.translation_info.redo_button": "[Press button to retranslate]",
+  "mutran.translation.translation_info.expand": "[Translation result]",
+
+  "mutran.configuration.main_options": "Main Options",
+  "mutran.configuration.main_options.button": "Main setting",
+  "mutran.configuration.main_options.tooltip": "Set up the translation",
   "mutran.configuration.enable_translation_main": "Enable translation",
   "mutran.configuration.enable_translation_main.tooltip": "Whether translation is enabled",
   "mutran.configuration.auto_detect_language": "Auto detect language",
@@ -14,21 +23,41 @@
   "mutran.configuration.to_language": "Target language",
   "mutran.configuration.to_language.tooltip": "What language to translate into",
   "mutran.configuration.translation_provider": "Translation provider",
-  "mutran.configuration.translation_provider.tooltip": "Choose your translation provider\nNow accept:\nYoudao:YouDao Translation\nBaidu:Baidu Translation",
+  "mutran.configuration.translation_provider.tooltip": "Choose your translation provider\nYoudao:YouDao Translation\nBaidu:Baidu Translation",
+
+  "mutran.configuration.app_options": "App Options",
+  "mutran.configuration.app_options.button": "App setting",
+  "mutran.configuration.app_options.tooltip": "Be careful not to open it with a shared screen to prevent leakage",
   "mutran.configuration.app_id": "App Id",
   "mutran.configuration.app_id.tooltip": "Your app id",
   "mutran.configuration.app_secret": "App Secret",
   "mutran.configuration.app_secret.tooltip": "Your api secret",
 
+  "mutran.configuration.chat_options": "Chat Translation Options",
+  "mutran.configuration.chat_options.button": "Chat translation setting",
+  "mutran.configuration.chat_options.tooltip": "Set up chat translation",
   "mutran.configuration.enable_translation_chat": "Enable chat translation",
   "mutran.configuration.enable_translation_chat.tooltip": "Whether chat translation is enabled",
   "mutran.configuration.chat_translation_display_mode": "Chat translation display mode",
-  "mutran.configuration.chat_translation_display_mode.tooltip": "How to display chat translations",
+  "mutran.configuration.chat_translation_display_mode.tooltip": "How to display chat translations\nFollow: Output an additional translated chat\nReplace: Only output the translated chat\nExpand: Output both the original text and the translation",
 
+  "mutran.configuration.item_options": "Item Translation Options",
+  "mutran.configuration.item_options.button": "Item translation setting",
+  "mutran.configuration.item_options.tooltip": "Set up item translation",
   "mutran.configuration.enable_translation_item": "Enable item translation",
   "mutran.configuration.enable_translation_item.tooltip": "Whether item translation is enabled",
   "mutran.configuration.item_translation_display_mode": "Item translation display mode",
-  "mutran.configuration.item_translation_display_mode.tooltip": "How to display item translations",
+  "mutran.configuration.item_translation_display_mode.tooltip": "How to display item translations\nFollow: Attach the translation below the original tooltips\nReplace: Replace the original tooltips with the translation result",
+  "mutran.configuration.item_translation_save_mode": "Item translation save mode",
+  "mutran.configuration.item_translation_save_mode.tooltip": "The mode of data saving, immediately reloading after saving changes\nInventory: Clear after closing the inventory\nServer: Clear after exit the server/your save\nPermanent: Always save data and will not be erased after switching other modes",
+
+  "mutran.configuration.book_options": "Book Translation Options",
+  "mutran.configuration.book_options.button": "Book translation setting",
+  "mutran.configuration.book_options.tooltip": "Set up book translation",
+  "mutran.configuration.enable_translation_book": "Enable book translation",
+  "mutran.configuration.enable_translation_book.tooltip": "Whether book translation is enabled",
+  "mutran.configuration.book_translation_display_mode": "Book translation display mode",
+  "mutran.configuration.book_translation_display_mode.tooltip": "How to display book translations\nExpand: Show the translation next to it",
 
   "mutran.configuration.title": "Mu's Translate",
   "mutran.configuration.section.mutran.common.toml": "Mu's Translate | Settings",
@@ -37,5 +66,6 @@
   "mutran.configuration.translation_provider.enum.youdao": "Youdao Translation",
   "mutran.configuration.translation_provider.enum.baidu": "Baidu Translation",
 
+  "mutran.error.info": "Error: ",
   "mutran.error.cant_translate": "Translation error, please check that your profile is typed correctly"
 }

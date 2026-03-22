@@ -2,7 +2,7 @@ package com.muriane.mutran;
 
 import com.mojang.logging.LogUtils;
 import com.muriane.mutran.config.Config;
-import com.muriane.mutran.gui.MuTranSetting;
+import com.muriane.mutran.screen.MuTranSetting;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
