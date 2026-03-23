@@ -12,7 +12,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.scores.*;
+import net.minecraft.world.scores.DisplaySlot;
+import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.Scoreboard;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
@@ -20,7 +22,10 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static com.muriane.mutran.translate.Translator.translateAsync;
 
