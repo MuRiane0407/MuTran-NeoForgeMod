@@ -3,23 +3,123 @@ package com.muriane.mutran.translate;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.muriane.mutran.MusTranslate;
 import com.muriane.mutran.config.Config;
 import net.minecraft.client.Minecraft;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import oshi.util.tuples.Pair;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Translator {
+    @EventBusSubscriber
+    public static class translationHolder{ // 用于限制并发速度防止报错
+        private static final Pair<List<String>, List<TranslationCallback>> translationRequests = new Pair<>(new ArrayList<>(), new ArrayList<>());
+        private static int minRequestWaitTime = 1000;
+        private static long lastRequestTime = 0;
+
+        @SubscribeEvent
+        public static void onTick(ClientTickEvent.Pre event){
+            if (minRequestWaitTime != Config.COMMON.TRANSLATION_WAIT_TIME.getAsInt()){
+                minRequestWaitTime = Config.COMMON.TRANSLATION_WAIT_TIME.getAsInt();
+            }
+
+            if (!translationRequests.getA().isEmpty() && System.currentTimeMillis() - lastRequestTime >= minRequestWaitTime){
+                if (Config.COMMON.ENABLE_MERGE_TRANSLATION.get()){
+                    MusTranslate.LOGGER.info("MergeTranslateAsync");
+                    lastRequestTime = System.currentTimeMillis();
+                    List<String> stringList = new ArrayList<>(translationRequests.getA());
+                    List<TranslationCallback> callbackList = new ArrayList<>(translationRequests.getB());
+                    translationRequests.getA().clear();
+                    translationRequests.getB().clear();
+
+                    TRANSLATION_POOL.submit(() -> {
+                        Pair<String, List<Integer>> pair = mergeString(stringList); // 合并并获取每个String有多少句
+
+                        String result = Translator.translate(pair.getA()); // 翻译
+
+                        List<String> splitStringList = splitString(result, pair.getB()); // 根据merge时的数据拆分整个句子
+
+                        for (int index = 0; index < splitStringList.size() ; index++){
+                            int finalIndex = index;
+                            TranslationCallback callback = callbackList.get(finalIndex);
+                            Minecraft.getInstance().execute(() -> callback.onComplete(splitStringList.get(finalIndex)));
+                        }
+                    });
+                }else{
+                    MusTranslate.LOGGER.info("TranslateAsync");
+                    lastRequestTime = System.currentTimeMillis();
+
+                    TRANSLATION_POOL.submit(() -> {
+                        String string = translationRequests.getA().getFirst();
+                        translationRequests.getA().removeFirst();
+                        String result = Translator.translate(string);
+
+                        TranslationCallback callback = translationRequests.getB().getFirst();
+                        translationRequests.getB().removeFirst();
+                        Minecraft.getInstance().execute(() -> callback.onComplete(result));
+                    });
+                }
+            }
+        }
+
+        public static List<String> splitString(String string, List<Integer> list){
+            List<String> splitList = List.of(string.split("\n"));
+            List<String> stringList = new ArrayList<>();
+            int index = 0;
+            for (int count : list){
+                StringBuilder stringBuilder = new StringBuilder();
+                for (int i = 0 ; i < count ; i++, index++){
+                    stringBuilder.append(splitList.get(index));
+                    if (i != count-1){
+                        stringBuilder.append("\n");
+                    }
+                }
+                stringList.add(new String(stringBuilder));
+            }
+
+            return stringList;
+        }
+
+        // 将n个String并为一条，提前计算好每一条String内有多少"\n"，再以"\n"为分界合并
+        public static Pair<String, List<Integer>> mergeString(List<String> list){
+            List<Integer> integerList = new ArrayList<>();
+            StringBuilder new_string = new StringBuilder();
+            for (String string : list){
+                if (string != null){
+                    String[] strings = string.split("\n");
+                    integerList.add(strings.length);
+
+                    new_string.append(string).append("\n");
+                }else{
+                    integerList.add(0);
+                }
+            }
+
+            return new Pair<>(new_string.toString(), integerList);
+        }
+
+        public static void addRequest(String text, TranslationCallback callback){
+            translationHolder.translationRequests.getA().add(text);
+            translationHolder.translationRequests.getB().add(callback);
+        }
+    }
+
     // 创建一个线程池处理翻译请求
     private static final ExecutorService TRANSLATION_POOL = Executors.newCachedThreadPool(r -> {
         Thread t = new Thread(r, "Translation Thread");
@@ -29,11 +129,8 @@ public class Translator {
 
     // 异步翻译文本
     public static void translateAsync(String text, TranslationCallback callback) {
-        TRANSLATION_POOL.submit(() -> {
-            String result = Translator.translate(text);
-            // 回到主线程执行回调
-            Minecraft.getInstance().execute(() -> callback.onComplete(result));
-        });
+        MusTranslate.LOGGER.info("RequestTranslate");
+        translationHolder.addRequest(text, callback);
     }
 
     // 回调接口
@@ -42,15 +139,14 @@ public class Translator {
     }
 
     public static String translate(String query){
-        String result;
+        String result = null;
         if (Config.COMMON.TRANSLATION_PROVIDER.get() == Config.TranslationProvider.Youdao){
             result = youdaoTranslate(query);
         }else if (Config.COMMON.TRANSLATION_PROVIDER.get() == Config.TranslationProvider.Baidu){
             result = baiduTranslate(query);
         }else{
-            return "Error translation provider not find";
+            MusTranslate.LOGGER.error("Translation provider not find");
         }
-
         return result;
     }
 
@@ -96,8 +192,7 @@ public class Translator {
 
             return youdaoParseResponse(response);
         } catch (Exception e) {
-            System.err.println("[mutran/WARN] 有道翻译失败: " + e.getMessage());
-            e.printStackTrace();
+            MusTranslate.LOGGER.error("Youdao Translation fail: {}", e.getMessage());
         }
         return null;
     }
@@ -109,7 +204,7 @@ public class Translator {
 
             String errorCode = json.get("errorCode").getAsString();
             if (!"0".equals(errorCode)) {
-                System.err.println("[mutran/WARN] 有道翻译返回错误码: " + errorCode);
+                MusTranslate.LOGGER.error("Youdao Translation error code: {}", errorCode);
                 return null;
             }
 
@@ -117,7 +212,7 @@ public class Translator {
                 return json.getAsJsonArray("translation").get(0).getAsString();
             }
         } catch (Exception e) {
-            System.err.println("[mutran/WARN] 解析翻译结果失败: " + e.getMessage());
+            MusTranslate.LOGGER.error("Youdao Translation parse fail: {}", e.getMessage());
         }
         return null;
     }
@@ -157,8 +252,7 @@ public class Translator {
 
             return baiduParseResponse(response);
         } catch (Exception e) {
-            System.err.println("[mutran/WARN] 百度翻译失败: " + e.getMessage());
-            e.printStackTrace();
+            MusTranslate.LOGGER.error("Baidu Translation fail: {}", e.getMessage());
         }
         return null;
     }
@@ -171,7 +265,7 @@ public class Translator {
             if (errorCode != null) {
                 String errorCode_str = errorCode.getAsString();
                 String errorMessage_str = json.get("error_msg").getAsString();
-                System.err.println("[mutran/WARN] 百度翻译返回错误码: [" + errorCode_str + "] " + errorMessage_str);
+                MusTranslate.LOGGER.error("Baidu Translation error code: [{}] {}", errorCode_str, errorMessage_str);
                 return null;
             }
 
@@ -180,7 +274,7 @@ public class Translator {
                 return object.get("dst").getAsString();
             }
         } catch (Exception e) {
-            System.err.println("[mutran/WARN] 解析翻译结果失败: " + e.getMessage());
+            MusTranslate.LOGGER.error("Baidu Translation parse fail: {}", e.getMessage());
         }
         return null;
     }
@@ -197,7 +291,7 @@ public class Translator {
             }
             return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("SHA-256算法不可用: ", e);
+            throw new RuntimeException("SHA-256 Error: ", e);
         }
     }
 
@@ -215,7 +309,7 @@ public class Translator {
             return md5.toString();
         }
         catch (final NoSuchAlgorithmException e) {
-            throw new RuntimeException("MD5算法不可用: ", e);
+            throw new RuntimeException("MD5 Error: ", e);
         }
     }
 }

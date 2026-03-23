@@ -23,7 +23,72 @@ public class ChatTranslate {
         public static void ReceiveChat(ClientChatReceivedEvent event){
             if (Config.COMMON.ENABLE_TRANSLATION_MAIN.get() && Config.COMMON.ENABLE_TRANSLATION_CHAT.get()){
                 if (event.isSystem()){
-                    return;
+                    if (Config.COMMON.TRANSLATE_SYSTEM_MESSAGE.get()){
+                        List<Component> components = event.getMessage().toFlatList();
+                        if (Config.COMMON.TRANSLATE_WITH_STYLE.get()){
+                            StringBuilder stringBuilder = new StringBuilder();
+                            for (Component component : components){
+                                stringBuilder.append(component.getString()).append("\n");
+                            }
+
+                            translateAsync(new String(stringBuilder),
+                                    result -> {
+                                        if (Minecraft.getInstance().player != null) {
+                                            if (result != null){
+                                                MutableComponent new_chat = Component.literal("");
+                                                String[] strings = result.split("\n");
+                                                for (int index = 0 ; index < strings.length ; index++){
+                                                    new_chat.append(Component.literal(strings[index]).setStyle(components.get(Math.min(index, components.size()-1)).getStyle()));
+                                                }
+
+                                                MutableComponent component = Component.literal("");
+                                                if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Follow){
+                                                    component.append(Component.translatable("mutran.translation.translation_info.expand").withColor(Color.GRAY.getRGB()));
+                                                    component.append(" ");
+                                                    component.append(new_chat);
+                                                }else if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Expand){
+                                                    component.append(event.getMessage());
+                                                    component.append(" (");
+                                                    component.append(new_chat);
+                                                    component.append(")");
+                                                }
+
+                                                Minecraft.getInstance().player.sendSystemMessage(component);
+                                            }else{
+                                                Minecraft.getInstance().player.sendSystemMessage(Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454));
+                                            }
+                                        }
+                                    });
+                        }else{
+                            StringBuilder stringBuilder = new StringBuilder();
+                            for (Component component : components){
+                                stringBuilder.append(component.getString());
+                            }
+
+                            translateAsync(new String(stringBuilder),
+                                    result -> {
+                                        if (Minecraft.getInstance().player != null) {
+                                            if (result != null){
+                                                MutableComponent component = Component.literal("");
+                                                if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Follow){
+                                                    component.append(Component.translatable("mutran.translation.translation_info.expand").withColor(Color.GRAY.getRGB()));
+                                                    component.append(" ");
+                                                    component.append(result);
+                                                }else if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Expand){
+                                                    component.append(event.getMessage());
+                                                    component.append(" (");
+                                                    component.append(result);
+                                                    component.append(")");
+                                                }
+
+                                                Minecraft.getInstance().player.sendSystemMessage(component);
+                                            }else{
+                                                Minecraft.getInstance().player.sendSystemMessage(Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454));
+                                            }
+                                        }
+                                    });
+                        }
+                    }
                 }else{
                     if (Minecraft.getInstance().level != null){
                         if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Replace || Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Expand){

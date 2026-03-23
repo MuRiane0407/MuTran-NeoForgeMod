@@ -12,6 +12,9 @@
   "client": [
     "BookEditScreenMixinInterface",
     "BookViewScreenMixinClass",
-    "BookViewScreenMixinInterface"
+    "BookViewScreenMixinInterface",
+    "BossHealthMixinInterface",
+    "GuiMixinInterface",
+    "PlayerScoreEntryMixinClass"
   ]
 }

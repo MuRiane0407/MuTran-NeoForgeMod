@@ -78,6 +78,10 @@ public class ItemTranslate {
                 List<Component> tooltips = event.getToolTip();
                 ItemTranslationDataManager manager = ItemTranslationDataManager.getInstance();
 
+                if (Config.COMMON.AUTO_TRANSLATE_ITEM.get() && !manager.containsKey(itemStackKey(stack))){
+                    // 由于没有找到区分自动加载和鼠标指向的方法，暂时无效
+                }
+
                 if (manager.containsKey(itemStackKey(stack))){
                     List<Component> new_tooltips = new ArrayList<>();
                     List<String> new_tooltips_str = manager.get(itemStackKey(stack)); // 用String是因为方便存储，若能解析Component就换用Component
@@ -85,7 +89,7 @@ public class ItemTranslate {
                     if (new_tooltips_str != null){
                         if (!Objects.equals(new_tooltips_str.getFirst(), Component.translatable("mutran.error.info").getString())){
                             for (int index = 0 ; index < new_tooltips_str.size() ; index++){
-                                new_tooltips.add(Component.literal(new_tooltips_str.get(index)).withStyle(tooltips.get(index).getStyle()));
+                                new_tooltips.add(Component.literal(new_tooltips_str.get(index)).withStyle(tooltips.get(Math.min(index, tooltips.size()-1)).getStyle()));
                             }
                         }else{
                             for (String string : new_tooltips_str) {
@@ -122,46 +126,50 @@ public class ItemTranslate {
         private static void inputKey(InputEvent.Key event){
             if (Config.COMMON.ENABLE_TRANSLATION_MAIN.get() && Config.COMMON.ENABLE_TRANSLATION_ITEM.get()) {
                 if (event.getKey() == TRANSLATE_KEY.getKey().getValue() && event.getAction() == 1) {
-                    Screen screen = Minecraft.getInstance().screen;
-                    if (screen instanceof AbstractContainerScreen<?> containerScreen) {
-                        Slot slot = containerScreen.getSlotUnderMouse();
-                        if (slot != null && !slot.getItem().isEmpty()) {
-                            Level level = Minecraft.getInstance().level;
-                            Player player = Minecraft.getInstance().player;
-                            ItemStack itemStack = slot.getItem().copy();
-                            ItemTranslationDataManager manager = ItemTranslationDataManager.getInstance();
+                    translateItem();
+                }
+            }
+        }
 
-                            boolean flag = player != null && player.isCreative() && slot.container == player.getInventory();
-                            TooltipFlag.Default tooltipflag$default = Minecraft.getInstance().options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
-                            TooltipFlag tooltipflag = flag ? tooltipflag$default.asCreative() : tooltipflag$default;
+        public static void translateItem(){
+            Screen screen = Minecraft.getInstance().screen;
+            if (screen instanceof AbstractContainerScreen<?> containerScreen) {
+                Slot slot = containerScreen.getSlotUnderMouse();
+                if (slot != null && !slot.getItem().isEmpty()) {
+                    Level level = Minecraft.getInstance().level;
+                    Player player = Minecraft.getInstance().player;
+                    ItemStack itemStack = slot.getItem().copy();
+                    ItemTranslationDataManager manager = ItemTranslationDataManager.getInstance();
 
-                            translation_progress.put(itemStackKey(itemStack), 0);
-                            manager.remove(itemStackKey(itemStack));
+                    boolean flag = player != null && player.isCreative() && slot.container == player.getInventory();
+                    TooltipFlag.Default tooltipflag$default = Minecraft.getInstance().options.advancedItemTooltips ? TooltipFlag.Default.ADVANCED : TooltipFlag.Default.NORMAL;
+                    TooltipFlag tooltipflag = flag ? tooltipflag$default.asCreative() : tooltipflag$default;
 
-                            List<Component> tooltips = slot.getItem().getTooltipLines(Item.TooltipContext.of(level), player, ClientTooltipFlag.of(tooltipflag)); // 这里创造模式物品栏的显示物品来源依旧不正常，之后再修复
-                            translation_progress.put(itemStackKey(itemStack), 1);
-                            StringBuilder str = new StringBuilder(); // 把需要翻译的工具提示都丢到一句内，减少请求量
-                            for (Component tooltip : tooltips) {
-                                str.append(tooltip.getString()).append("\n");
-                            }
-                            List<String> new_tooltips = new ArrayList<>();
-                            translateAsync(str.toString(),
-                                    result -> {
-                                        if (result != null){
-                                            String[] strings = result.split("\n");
-                                            new_tooltips.addAll(Arrays.asList(strings));
+                    translation_progress.put(itemStackKey(itemStack), 0);
+                    manager.remove(itemStackKey(itemStack));
 
-                                            manager.put(itemStackKey(itemStack), new_tooltips);
-                                        }else{
-                                            List<String> error_tooltips = new ArrayList<>();
-                                            error_tooltips.add(Component.translatable("mutran.error.info").getString());
-                                            error_tooltips.add(Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).getString());
-                                            manager.put(itemStackKey(itemStack), error_tooltips);
-                                        }
-                                        translation_progress.remove(itemStackKey(itemStack));
-                                    });
-                        }
+                    List<Component> tooltips = slot.getItem().getTooltipLines(Item.TooltipContext.of(level), player, ClientTooltipFlag.of(tooltipflag)); // 这里创造模式物品栏的显示物品来源依旧不正常，之后再修复
+                    translation_progress.put(itemStackKey(itemStack), 1);
+                    StringBuilder str = new StringBuilder(); // 把需要翻译的工具提示都丢到一句内，减少请求量
+                    for (Component tooltip : tooltips) {
+                        str.append(tooltip.getString()).append("\n");
                     }
+                    List<String> new_tooltips = new ArrayList<>();
+                    translateAsync(str.toString(),
+                            result -> {
+                                if (result != null){
+                                    String[] strings = result.split("\n");
+                                    new_tooltips.addAll(Arrays.asList(strings));
+
+                                    manager.put(itemStackKey(itemStack), new_tooltips);
+                                }else{
+                                    List<String> error_tooltips = new ArrayList<>();
+                                    error_tooltips.add(Component.translatable("mutran.error.info").getString());
+                                    error_tooltips.add(Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).getString());
+                                    manager.put(itemStackKey(itemStack), error_tooltips);
+                                }
+                                translation_progress.remove(itemStackKey(itemStack));
+                            });
                 }
             }
         }

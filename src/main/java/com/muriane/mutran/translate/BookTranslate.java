@@ -7,12 +7,14 @@ import com.muriane.mutran.mixin.BookViewScreenMixinInterface;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.BookEditScreen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 
 import java.awt.*;
@@ -33,6 +35,29 @@ public class BookTranslate {
                     BookTranslateButton button = new BookTranslateButton(screen.width/2 - 100, 160, 20, 20, screen, event);
 
                     event.addListener(button);
+                }
+            }
+        }
+
+        @SubscribeEvent
+        private static void onTick(ClientTickEvent.Pre event){
+            if (Config.COMMON.ENABLE_TRANSLATION_MAIN.get() && Config.COMMON.ENABLE_TRANSLATION_BOOK.get() && Config.COMMON.AUTO_TRANSLATE_BOOK.get()){
+                Screen screen = Minecraft.getInstance().screen;
+                if (screen instanceof BookEditScreen || screen instanceof BookViewScreen){
+                    for (Renderable renderable : screen.renderables){
+                        if (renderable instanceof BookTranslateButton button){
+                            int page = 0;
+                            if (screen instanceof BookEditScreen bookEditScreen){
+                                page = ((BookEditScreenMixinInterface) bookEditScreen).getCurrentPage();
+                            }else if (screen instanceof BookViewScreen bookViewScreen){
+                                page = ((BookViewScreenMixinInterface) bookViewScreen).getCurrentPage();
+                            }
+
+                            if (!button.translation.containsKey(page)){
+                                translateBook(screen);
+                            }
+                        }
+                    }
                 }
             }
         }
