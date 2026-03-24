@@ -24,6 +24,10 @@ public class ChatTranslate {
             if (Config.COMMON.ENABLE_TRANSLATION_MAIN.get() && Config.COMMON.ENABLE_TRANSLATION_CHAT.get()){
                 if (event.isSystem()){
                     if (Config.COMMON.TRANSLATE_SYSTEM_MESSAGE.get()){
+                        if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Replace || Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Expand){
+                            event.setCanceled(true);
+                        }
+
                         List<Component> components = event.getMessage().toFlatList();
                         if (Config.COMMON.TRANSLATE_WITH_STYLE.get()){
                             StringBuilder stringBuilder = new StringBuilder();
@@ -45,6 +49,8 @@ public class ChatTranslate {
                                                 if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Follow){
                                                     component.append(Component.translatable("mutran.translation.translation_info.expand").withColor(Color.GRAY.getRGB()));
                                                     component.append(" ");
+                                                    component.append(new_chat);
+                                                }else if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Replace) {
                                                     component.append(new_chat);
                                                 }else if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Expand){
                                                     component.append(event.getMessage());
@@ -73,6 +79,8 @@ public class ChatTranslate {
                                                 if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Follow){
                                                     component.append(Component.translatable("mutran.translation.translation_info.expand").withColor(Color.GRAY.getRGB()));
                                                     component.append(" ");
+                                                    component.append(result);
+                                                }else if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Replace) {
                                                     component.append(result);
                                                 }else if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Expand){
                                                     component.append(event.getMessage());
@@ -106,6 +114,9 @@ public class ChatTranslate {
                                             if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Follow){
                                                 component.append(Component.translatable("mutran.translation.translation_info.expand").withColor(Color.GRAY.getRGB()));
                                                 component.append(" ");
+                                                for (int index = 0 ; index < components.size()-1 ; index++) component.append(components.get(index));
+                                                component.append(Component.literal(result).setStyle(chat_style));
+                                            }else if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Replace) {
                                                 for (int index = 0 ; index < components.size()-1 ; index++) component.append(components.get(index));
                                                 component.append(Component.literal(result).setStyle(chat_style));
                                             }else if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Expand){
