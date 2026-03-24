@@ -57,7 +57,7 @@ public class ChatTranslate {
                                                         component.append(" ");
                                                         component.append(new_chat);
                                                     } else if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Replace) {
-                                                        component.append(result);
+                                                        component.append(new_chat);
                                                     } else if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Expand) {
                                                         component.append(event.getMessage());
                                                         component.append(" (");
@@ -123,12 +123,10 @@ public class ChatTranslate {
                                                 if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Follow) {
                                                     component.append(Component.translatable("mutran.translation.translation_info.expand").withColor(Color.GRAY.getRGB()));
                                                     component.append(" ");
-                                                    for (int index = 0; index < components.size() - 1; index++)
-                                                        component.append(components.get(index));
+                                                    for (int index = 0; index < components.size() - 1; index++) component.append(components.get(index));
                                                     component.append(Component.literal(result).setStyle(chat_style));
                                                 } else if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Replace) {
-                                                    for (int index = 0; index < components.size() - 1; index++)
-                                                        component.append(components.get(index));
+                                                    for (int index = 0; index < components.size() - 1; index++) component.append(components.get(index));
                                                     component.append(Component.literal(result).setStyle(chat_style));
                                                 } else if (Config.COMMON.CHAT_TRANSLATION_DISPLAY_MODE.get() == Config.ChatTranslationDisplayMode.Expand) {
                                                     component.append(event.getMessage());
