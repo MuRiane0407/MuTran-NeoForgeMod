@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.muriane.mutran.translate.ChatTranslate.ChatTranslateHolder.sendMessageWithSign;
 import static com.muriane.mutran.translate.Translator.translateAsync;
 
 public class OtherVanillaTranslate {
@@ -80,7 +81,7 @@ public class OtherVanillaTranslate {
                                     gui.setTitle(component);
                                 }else{
                                     if (Minecraft.getInstance().player != null) {
-                                        Minecraft.getInstance().player.sendSystemMessage(Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454));
+                                        sendMessageWithSign(Minecraft.getInstance().player, Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454));
                                     }
                                 }
                     });
@@ -97,7 +98,7 @@ public class OtherVanillaTranslate {
                                     gui.setSubtitle(component);
                                 }else{
                                     if (Minecraft.getInstance().player != null) {
-                                        Minecraft.getInstance().player.sendSystemMessage(Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454));
+                                        sendMessageWithSign(Minecraft.getInstance().player, Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454));
                                     }
                                 }
                     });
@@ -128,7 +129,7 @@ public class OtherVanillaTranslate {
                                     gui.setOverlayMessage(component, false);
                                 }else{
                                     if (Minecraft.getInstance().player != null) {
-                                        Minecraft.getInstance().player.sendSystemMessage(Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454));
+                                        sendMessageWithSign(Minecraft.getInstance().player, Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454));
                                     }
                                 }
                             });
@@ -160,7 +161,7 @@ public class OtherVanillaTranslate {
                                         lerpingBossEventMap.get(uuid).setName(component);
                                     }else{
                                         if (Minecraft.getInstance().player != null) {
-                                            Minecraft.getInstance().player.sendSystemMessage(Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454));
+                                            sendMessageWithSign(Minecraft.getInstance().player, Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454));
                                         }
                                     }
                         });
@@ -210,7 +211,7 @@ public class OtherVanillaTranslate {
                                                 objective.setDisplayName(component);
                                             } else {
                                                 if (Minecraft.getInstance().player != null) {
-                                                    Minecraft.getInstance().player.sendSystemMessage(Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454));
+                                                    sendMessageWithSign(Minecraft.getInstance().player, Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454));
                                                 }
                                             }
                                 });
@@ -267,7 +268,7 @@ public class OtherVanillaTranslate {
                                             entity.setCustomName(component);
                                         }else{
                                             if (Minecraft.getInstance().player != null) {
-                                                Minecraft.getInstance().player.sendSystemMessage(Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454));
+                                                sendMessageWithSign(Minecraft.getInstance().player, Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454));
                                             }
                                         }
                             });

@@ -11,6 +11,7 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.BookEditScreen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -82,7 +83,9 @@ public class BookTranslate {
                                     button.addTranslation(screen, result);
                                 }
                             }else{
-                                Minecraft.getInstance().player.sendSystemMessage(Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454));
+                                if (button != null) {
+                                    button.addTranslation(screen, Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454).getString());
+                                }
                             }
                         }
             });
@@ -119,7 +122,7 @@ public class BookTranslate {
                 if (translation.containsKey(page)){
                     if (Config.COMMON.BOOK_TRANSLATION_DISPLAY_MODE.get() == Config.BookTranslationDisplayMode.Expand) {
                         boolean tooNarrow = (screen.width-192)/2 + 144 + 166 > screen.width;
-                        guiGraphics.blit(BookViewScreen.BOOK_LOCATION, tooNarrow ? screen.width-166 : (screen.width-192)/2 + 144, 2, 0, 0, 192, 192);
+                        guiGraphics.blit(RenderType::guiTexturedOverlay, BookViewScreen.BOOK_LOCATION, tooNarrow ? screen.width-166 : (screen.width - 192)/2 + 144, 2, 0, 0, 192, 192, 256, 256);
                     }
 
                     int strX = (screen.width - 192) / 2 + 180;

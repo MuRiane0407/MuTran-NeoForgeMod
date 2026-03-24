@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import static com.muriane.mutran.translate.ChatTranslate.ChatTranslateHolder.sendMessageWithSign;
 import static com.muriane.mutran.translate.OtherVanillaTranslate.ScoreboardTranslate.scoreboardPlayerNameTranslation;
 import static com.muriane.mutran.translate.Translator.translateAsync;
 
@@ -35,7 +36,7 @@ public class PlayerScoreEntryMixinClass {
                                 scoreboardPlayerNameTranslation.put(this.owner, Component.literal(result));
                             }else{
                                 if (Minecraft.getInstance().player != null) {
-                                    Minecraft.getInstance().player.sendSystemMessage(Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454));
+                                    sendMessageWithSign(Minecraft.getInstance().player, Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454));
                                 }
                             }
                 });
