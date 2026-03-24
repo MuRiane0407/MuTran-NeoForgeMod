@@ -144,8 +144,6 @@ public class ChatTranslate {
                         }
                     }
                 }
-            }else{
-                return;
             }
         }
 
