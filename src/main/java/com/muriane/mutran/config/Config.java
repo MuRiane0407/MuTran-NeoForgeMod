@@ -159,7 +159,8 @@ public class Config {
 
     public enum TranslationProvider{
         Youdao("mutran.configuration.translation_provider.enum.youdao", "https://openapi.youdao.com/api"),
-        Baidu("mutran.configuration.translation_provider.enum.baidu", "https://fanyi-api.baidu.com/api/trans/vip/translate");
+        Baidu("mutran.configuration.translation_provider.enum.baidu", "https://fanyi-api.baidu.com/api/trans/vip/translate"),
+        /*Tencent("mutran.configuration.translation_provider.enum.tencent", "https://tmt.tencentcloudapi.com")*/;
 
         private final String displayName;
         private final String apiUrl;
@@ -179,22 +180,24 @@ public class Config {
     }
 
     public enum TranslationLanguage{
-        English("en", "en"),
-        Chinese("zh-CHS", "zh"),
-        Chinese_Traditional("zh-CHT", "cht"),
-        Japanese("ja", "jp"),
-        French("fr", "fra"),
-        German("de", "de"),
-        Russian("ru", "ru"),
-        Spanish("es", "spa"),
-        Arabic("ar", "ara");
+        English("en", "en", "en"),
+        Chinese("zh-CHS", "zh", "zh"),
+        Chinese_Traditional("zh-CHT", "cht", "zh-TW"),
+        Japanese("ja", "jp", "ja"),
+        French("fr", "fra", "fr"),
+        German("de", "de", "de"),
+        Russian("ru", "ru", "ru"),
+        Spanish("es", "spa", "es"),
+        Arabic("ar", "ara", "ar");
 
         private final String youdao;
         private final String baidu;
+        private final String tencent;
 
-        TranslationLanguage(String youdao, String baidu){
+        TranslationLanguage(String youdao, String baidu, String tencent){
             this.youdao = youdao;
             this.baidu = baidu;
+            this.tencent = tencent;
         }
 
         public String getYoudao(){
@@ -203,6 +206,10 @@ public class Config {
 
         public String getBaidu() {
             return baidu;
+        }
+
+        public String getTencent() {
+            return tencent;
         }
     }
 

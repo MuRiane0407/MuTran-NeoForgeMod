@@ -141,142 +141,146 @@ public class Translator {
     public static String translate(String query){
         String result = null;
         if (Config.COMMON.TRANSLATION_PROVIDER.get() == Config.TranslationProvider.Youdao){
-            result = youdaoTranslate(query);
+            result = YoudaoTranslation.youdaoTranslate(query);
         }else if (Config.COMMON.TRANSLATION_PROVIDER.get() == Config.TranslationProvider.Baidu){
-            result = baiduTranslate(query);
+            result = BaiduTranslation.baiduTranslate(query);
         }else{
             MusTranslate.LOGGER.error("Translation provider not find");
         }
         return result;
     }
 
-    // 尝试翻译
-    public static String youdaoTranslate(String query){
-        String app_id = Config.COMMON.APP_ID.get();
-        String app_secret = Config.COMMON.APP_SECRET.get();
+    public static class YoudaoTranslation {
+        // 尝试翻译
+        public static String youdaoTranslate(String query) {
+            String app_id = Config.COMMON.APP_ID.get();
+            String app_secret = Config.COMMON.APP_SECRET.get();
 
-        String from = Config.COMMON.FROM_LANGUAGE.get().getYoudao();
-        String to = Config.COMMON.TO_LANGUAGE.get().getYoudao();
-        if (Config.COMMON.AUTO_DETECT_LANGUAGE.get()){
-            from = "auto";
+            String from = Config.COMMON.FROM_LANGUAGE.get().getYoudao();
+            String to = Config.COMMON.TO_LANGUAGE.get().getYoudao();
+            if (Config.COMMON.AUTO_DETECT_LANGUAGE.get()) {
+                from = "auto";
+            }
+
+            String salt = UUID.randomUUID().toString().replace("-", "").substring(0, 10);
+            String curtime = String.valueOf(System.currentTimeMillis() / 1000);
+
+            String input = query.length() <= 20 ? query : (query.substring(0, 10) + query.length() + query.substring(query.length() - 10));
+            String signStr = app_id + input + salt + curtime + app_secret; // 签名生成方法如下： signType=v3； sign=sha256(应用ID+input+salt+curtime+应用密钥)； 其中，input的计算方式为：input=q前10个字符 + q长度 + q后10个字符（当q长度大于20）或 input=q字符串（当q长度小于等于20）；
+            String sign = sha256(signStr);
+
+            try (CloseableHttpClient client = HttpClients.createDefault()) {
+                HttpPost post = new HttpPost(Config.COMMON.TRANSLATION_PROVIDER.get().getApiUrl());
+
+                post.setHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                StringBuilder params = new StringBuilder();
+                params.append("q=").append(java.net.URLEncoder.encode(query, StandardCharsets.UTF_8));
+                params.append("&from=").append(from);
+                params.append("&to=").append(to);
+                params.append("&appKey=").append(app_id);
+                params.append("&salt=").append(salt);
+                params.append("&sign=").append(sign);
+                params.append("&signType=").append("v3");
+                params.append("&curtime=").append(curtime);
+                params.append("&strict=").append(true);
+                params.append("&domain=").append("game");
+
+                StringEntity entity = new StringEntity(params.toString(), StandardCharsets.UTF_8);
+                post.setEntity(entity);
+
+                String response = EntityUtils.toString(client.execute(post).getEntity(), StandardCharsets.UTF_8);
+
+                return youdaoParseResponse(response);
+            } catch (Exception e) {
+                MusTranslate.LOGGER.error("Youdao Translation fail: {}", e.getMessage());
+            }
+            return null;
         }
 
-        String salt = UUID.randomUUID().toString().replace("-", "").substring(0, 10);
-        String curtime = String.valueOf(System.currentTimeMillis() / 1000);
+        // 解析响应json
+        private static String youdaoParseResponse(String jsonResponse) {
+            try {
+                JsonObject json = JsonParser.parseString(jsonResponse).getAsJsonObject();
 
-        String input = query.length() <= 20 ? query : (query.substring(0, 10) + query.length() + query.substring(query.length()-10));
-        String signStr = app_id + input + salt + curtime + app_secret; // 签名生成方法如下： signType=v3； sign=sha256(应用ID+input+salt+curtime+应用密钥)； 其中，input的计算方式为：input=q前10个字符 + q长度 + q后10个字符（当q长度大于20）或 input=q字符串（当q长度小于等于20）；
-        String sign = sha256(signStr);
+                String errorCode = json.get("errorCode").getAsString();
+                if (!"0".equals(errorCode)) {
+                    MusTranslate.LOGGER.error("Youdao Translation error code: {}", errorCode);
+                    return null;
+                }
 
-        try(CloseableHttpClient client = HttpClients.createDefault()){
-            HttpPost post = new HttpPost(Config.COMMON.TRANSLATION_PROVIDER.get().getApiUrl());
-
-            post.setHeader("Content-Type", "application/x-www-form-urlencoded");
-
-            StringBuilder params = new StringBuilder();
-            params.append("q=").append(java.net.URLEncoder.encode(query, StandardCharsets.UTF_8));
-            params.append("&from=").append(from);
-            params.append("&to=").append(to);
-            params.append("&appKey=").append(app_id);
-            params.append("&salt=").append(salt);
-            params.append("&sign=").append(sign);
-            params.append("&signType=").append("v3");
-            params.append("&curtime=").append(curtime);
-            params.append("&strict=").append(true);
-            params.append("&domain=").append("game");
-
-            StringEntity entity = new StringEntity(params.toString(), StandardCharsets.UTF_8);
-            post.setEntity(entity);
-
-            String response = EntityUtils.toString(client.execute(post).getEntity(), StandardCharsets.UTF_8);
-
-            return youdaoParseResponse(response);
-        } catch (Exception e) {
-            MusTranslate.LOGGER.error("Youdao Translation fail: {}", e.getMessage());
+                if (json.has("translation")) {
+                    return json.getAsJsonArray("translation").get(0).getAsString();
+                }
+            } catch (Exception e) {
+                MusTranslate.LOGGER.error("Youdao Translation parse fail: {}", e.getMessage());
+            }
+            return null;
         }
-        return null;
     }
 
-    // 解析响应json
-    private static String youdaoParseResponse(String jsonResponse) {
-        try {
-            JsonObject json = JsonParser.parseString(jsonResponse).getAsJsonObject();
+    public static class BaiduTranslation {
+        public static String baiduTranslate(String query) {
+            String app_id = Config.COMMON.APP_ID.get();
+            String app_secret = Config.COMMON.APP_SECRET.get();
 
-            String errorCode = json.get("errorCode").getAsString();
-            if (!"0".equals(errorCode)) {
-                MusTranslate.LOGGER.error("Youdao Translation error code: {}", errorCode);
-                return null;
+            String from = Config.COMMON.FROM_LANGUAGE.get().getBaidu();
+            String to = Config.COMMON.TO_LANGUAGE.get().getBaidu();
+            if (Config.COMMON.AUTO_DETECT_LANGUAGE.get()) {
+                from = "auto";
             }
 
-            if (json.has("translation")) {
-                return json.getAsJsonArray("translation").get(0).getAsString();
+            String salt = UUID.randomUUID().toString().replace("-", "").substring(0, 10);
+
+            String signStr = app_id + query + salt + app_secret; // appid+q+salt+密钥 的MD5值
+            String sign = md5(signStr);
+
+            try (CloseableHttpClient client = HttpClients.createDefault()) {
+                HttpPost post = new HttpPost(Config.COMMON.TRANSLATION_PROVIDER.get().getApiUrl());
+
+                post.setHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                StringBuilder params = new StringBuilder();
+                params.append("q=").append(java.net.URLEncoder.encode(query, StandardCharsets.UTF_8));
+                params.append("&from=").append(from);
+                params.append("&to=").append(to);
+                params.append("&appid=").append(app_id);
+                params.append("&salt=").append(salt);
+                params.append("&sign=").append(sign);
+
+                StringEntity entity = new StringEntity(params.toString(), StandardCharsets.UTF_8);
+                post.setEntity(entity);
+
+                String response = EntityUtils.toString(client.execute(post).getEntity(), StandardCharsets.UTF_8);
+
+                return baiduParseResponse(response);
+            } catch (Exception e) {
+                MusTranslate.LOGGER.error("Baidu Translation fail: {}", e.getMessage());
             }
-        } catch (Exception e) {
-            MusTranslate.LOGGER.error("Youdao Translation parse fail: {}", e.getMessage());
-        }
-        return null;
-    }
-
-    public static String baiduTranslate(String query){
-        String app_id = Config.COMMON.APP_ID.get();
-        String app_secret = Config.COMMON.APP_SECRET.get();
-
-        String from = Config.COMMON.FROM_LANGUAGE.get().getBaidu();
-        String to = Config.COMMON.TO_LANGUAGE.get().getBaidu();
-        if (Config.COMMON.AUTO_DETECT_LANGUAGE.get()){
-            from = "auto";
+            return null;
         }
 
-        String salt = UUID.randomUUID().toString().replace("-", "").substring(0, 10);
+        private static String baiduParseResponse(String jsonResponse) {
+            try {
+                JsonObject json = JsonParser.parseString(jsonResponse).getAsJsonObject();
 
-        String signStr = app_id + query + salt + app_secret; // appid+q+salt+密钥 的MD5值
-        String sign = md5(signStr);
+                JsonElement errorCode = json.get("error_code");
+                if (errorCode != null) {
+                    String errorCode_str = errorCode.getAsString();
+                    String errorMessage_str = json.get("error_msg").getAsString();
+                    MusTranslate.LOGGER.error("Baidu Translation error code: [{}] {}", errorCode_str, errorMessage_str);
+                    return null;
+                }
 
-        try(CloseableHttpClient client = HttpClients.createDefault()){
-            HttpPost post = new HttpPost(Config.COMMON.TRANSLATION_PROVIDER.get().getApiUrl());
-
-            post.setHeader("Content-Type", "application/x-www-form-urlencoded");
-
-            StringBuilder params = new StringBuilder();
-            params.append("q=").append(java.net.URLEncoder.encode(query, StandardCharsets.UTF_8));
-            params.append("&from=").append(from);
-            params.append("&to=").append(to);
-            params.append("&appid=").append(app_id);
-            params.append("&salt=").append(salt);
-            params.append("&sign=").append(sign);
-
-            StringEntity entity = new StringEntity(params.toString(), StandardCharsets.UTF_8);
-            post.setEntity(entity);
-
-            String response = EntityUtils.toString(client.execute(post).getEntity(), StandardCharsets.UTF_8);
-
-            return baiduParseResponse(response);
-        } catch (Exception e) {
-            MusTranslate.LOGGER.error("Baidu Translation fail: {}", e.getMessage());
-        }
-        return null;
-    }
-
-    private static String baiduParseResponse(String jsonResponse) {
-        try {
-            JsonObject json = JsonParser.parseString(jsonResponse).getAsJsonObject();
-
-            JsonElement errorCode = json.get("error_code");
-            if (errorCode != null) {
-                String errorCode_str = errorCode.getAsString();
-                String errorMessage_str = json.get("error_msg").getAsString();
-                MusTranslate.LOGGER.error("Baidu Translation error code: [{}] {}", errorCode_str, errorMessage_str);
-                return null;
+                if (json.has("trans_result")) {
+                    JsonObject object = (JsonObject) json.getAsJsonArray("trans_result").get(0);
+                    return object.get("dst").getAsString();
+                }
+            } catch (Exception e) {
+                MusTranslate.LOGGER.error("Baidu Translation parse fail: {}", e.getMessage());
             }
-
-            if (json.has("trans_result")) {
-                JsonObject object = (JsonObject) json.getAsJsonArray("trans_result").get(0);
-                return object.get("dst").getAsString();
-            }
-        } catch (Exception e) {
-            MusTranslate.LOGGER.error("Baidu Translation parse fail: {}", e.getMessage());
+            return null;
         }
-        return null;
     }
 
     private static String sha256(String input) {

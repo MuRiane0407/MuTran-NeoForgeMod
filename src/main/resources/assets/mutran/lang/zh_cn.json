@@ -24,7 +24,7 @@
   "mutran.configuration.to_language": "目标语言",
   "mutran.configuration.to_language.tooltip": "翻译成什么语言",
   "mutran.configuration.translation_provider": "翻译源",
-  "mutran.configuration.translation_provider.tooltip": "选择你的翻译源\nYoudao:有道翻译\nBaidu:百度翻译",
+  "mutran.configuration.translation_provider.tooltip": "选择你的翻译源\nYoudao: 有道翻译\nBaidu: 百度翻译",
   "mutran.configuration.translation_wait_time": "翻译等待时间",
   "mutran.configuration.translation_wait_time.tooltip": "翻译请求的间隔时间\n不建议设置过低，容易导致报错",
   "mutran.configuration.enable_merge_translation": "启用合并翻译",

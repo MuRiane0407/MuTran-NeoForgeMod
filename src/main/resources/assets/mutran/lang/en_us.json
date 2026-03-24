@@ -24,7 +24,7 @@
   "mutran.configuration.to_language": "Target language",
   "mutran.configuration.to_language.tooltip": "What language to translate into",
   "mutran.configuration.translation_provider": "Translation provider",
-  "mutran.configuration.translation_provider.tooltip": "Choose your translation provider\nYoudao:YouDao Translation\nBaidu:Baidu Translation",
+  "mutran.configuration.translation_provider.tooltip": "Choose your translation provider\nYoudao: YouDao Translation\nBaidu: Baidu Translation",
   "mutran.configuration.translation_wait_time": "Translation wait time",
   "mutran.configuration.translation_wait_time.tooltip": "The interval between translation requests\nIt is not recommended to set it too low, as it may lead to an error",
   "mutran.configuration.enable_merge_translation": "Enable merge translation",
