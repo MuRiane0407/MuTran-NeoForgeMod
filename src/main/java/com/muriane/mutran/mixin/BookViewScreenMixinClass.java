@@ -2,6 +2,7 @@ package com.muriane.mutran.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.muriane.mutran.api.IBookViewScreen;
+import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.network.chat.FormattedText;
@@ -14,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-@OnlyIn(Dist.CLIENT)
 @Mixin(BookViewScreen.class)
 public abstract class BookViewScreenMixinClass implements IBookViewScreen {
     @Unique
@@ -25,16 +25,11 @@ public abstract class BookViewScreenMixinClass implements IBookViewScreen {
         return text$mutran;
     }
 
-    @Inject(method = "render",
+    @Inject(method = "visitText",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/client/gui/Font;split(Lnet/minecraft/network/chat/FormattedText;I)Ljava/util/List;"),
             locals = LocalCapture.CAPTURE_FAILHARD)
-    private void injectRender(GuiGraphics guiGraphics,
-                              int mouseX,
-                              int mouseY,
-                              float partialTick,
-                              CallbackInfo ci,
-                              @Local FormattedText formattedText) {
-        text$mutran = formattedText;
+    private void injectVisitText(ActiveTextCollector activeTextCollector, boolean contentOnly, CallbackInfo ci, @Local FormattedText formattedtext) {
+        text$mutran = formattedtext;
     }
 }

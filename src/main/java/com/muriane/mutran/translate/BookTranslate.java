@@ -11,8 +11,9 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.BookEditScreen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
@@ -29,7 +30,7 @@ public class BookTranslate {
     @EventBusSubscriber
     public static class BookTranslateHolder{
         @SubscribeEvent
-        private static void onScreenInit(ScreenEvent.Init.Post event){
+        private static void onScreenInit(ScreenEvent.Init.Pre event){
             if (Config.COMMON.ENABLE_TRANSLATION_MAIN.get() && Config.COMMON.ENABLE_TRANSLATION_BOOK.get()){
                 Screen screen = event.getScreen();
                 if (screen instanceof BookEditScreen || screen instanceof BookViewScreen){
@@ -66,9 +67,11 @@ public class BookTranslate {
         public static void translateBook(Screen screen){
             String text = "";
             if (screen instanceof BookEditScreen bookEditScreen){
-                text = ((BookEditScreenMixinInterface) bookEditScreen).invokerGetCurrentPageText();
+                text = ((BookEditScreenMixinInterface) bookEditScreen).getPages().get(((BookEditScreenMixinInterface) bookEditScreen).getCurrentPage());
             }else if (screen instanceof BookViewScreen bookViewScreen){
-                text = ((IBookViewScreen) bookViewScreen).getText$mutran().getString();
+                FormattedText formattedText = ((IBookViewScreen) bookViewScreen).getText$mutran();
+                if (formattedText == null) return;
+                text = formattedText.getString();
             }
             BookTranslateButton button = screen.renderables.stream().filter(renderable -> renderable instanceof BookTranslateButton).map(renderable -> (BookTranslateButton) renderable).findFirst().orElse(null);
             if (button != null) {
@@ -92,18 +95,18 @@ public class BookTranslate {
         }
     }
 
-    public static class BookTranslateButton extends Button{
+    public static class BookTranslateButton extends Button.Plain {
         private final Map<Integer, String> translation = new HashMap<>();
 
-        protected BookTranslateButton(int x, int y, int width, int height, Screen screen, ScreenEvent.Init.Post event) {
+        protected BookTranslateButton(int x, int y, int width, int height, Screen screen, ScreenEvent.Init.Pre event) {
             super(x, y, width, height, Component.translatable("mutran.button.translate"), btn -> {
                 translateBook(screen);
             }, DEFAULT_NARRATION);
         }
 
         @Override
-        protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-            super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
+        protected void renderContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+            super.renderContents(guiGraphics, mouseX, mouseX, partialTick);
             addTranslationString(guiGraphics);
         }
 
@@ -122,7 +125,7 @@ public class BookTranslate {
                 if (translation.containsKey(page)){
                     if (Config.COMMON.BOOK_TRANSLATION_DISPLAY_MODE.get() == Config.BookTranslationDisplayMode.Expand) {
                         boolean tooNarrow = (screen.width-192)/2 + 144 + 166 > screen.width;
-                        guiGraphics.blit(RenderType::guiTexturedOverlay, BookViewScreen.BOOK_LOCATION, tooNarrow ? screen.width-166 : (screen.width - 192)/2 + 144, 2, 0, 0, 192, 192, 256, 256);
+                        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BookViewScreen.BOOK_LOCATION, tooNarrow ? screen.width-166 : (screen.width - 192)/2 + 144, 2, 0, 0, 192, 192, 256, 256);
                     }
 
                     int strX = (screen.width - 192) / 2 + 180;
@@ -131,7 +134,7 @@ public class BookTranslate {
                         String[] strings = translation.get(page).split("\n");
                         for (int index = 0 ; index < strings.length ; index++){
                             int strY = 32 + index*9;
-                            guiGraphics.drawString(minecraft.font, strings[index], strX, strY, 0, false);
+                            guiGraphics.drawString(minecraft.font, strings[index], strX, strY, Color.BLACK.getRGB(), false);
                         }
                         guiGraphics.drawString(minecraft.font, Component.translatable("mutran.translation.translation_info.redo_button"), (screen.width-192)/2+180, 163, Color.GRAY.getRGB(), false);
                     }else{

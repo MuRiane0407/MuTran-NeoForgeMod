@@ -9,13 +9,12 @@ import net.minecraft.client.Minecraft;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import oshi.util.tuples.Pair;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -169,11 +168,7 @@ public class Translator {
             String signStr = app_id + input + salt + curtime + app_secret; // 签名生成方法如下： signType=v3； sign=sha256(应用ID+input+salt+curtime+应用密钥)； 其中，input的计算方式为：input=q前10个字符 + q长度 + q后10个字符（当q长度大于20）或 input=q字符串（当q长度小于等于20）；
             String sign = sha256(signStr);
 
-            try (CloseableHttpClient client = HttpClients.createDefault()) {
-                HttpPost post = new HttpPost(Config.COMMON.TRANSLATION_PROVIDER.get().getApiUrl());
-
-                post.setHeader("Content-Type", "application/x-www-form-urlencoded");
-
+            try (HttpClient client = HttpClient.newHttpClient()) {
                 StringBuilder params = new StringBuilder();
                 params.append("q=").append(java.net.URLEncoder.encode(query, StandardCharsets.UTF_8));
                 params.append("&from=").append(from);
@@ -186,12 +181,17 @@ public class Translator {
                 params.append("&strict=").append(true);
                 params.append("&domain=").append("game");
 
-                StringEntity entity = new StringEntity(params.toString(), StandardCharsets.UTF_8);
-                post.setEntity(entity);
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(Config.COMMON.TRANSLATION_PROVIDER.get().getApiUrl()))
+                        .header("Content-Type", "application/x-www-form-urlencoded")
+                        .POST(HttpRequest.BodyPublishers.ofString(params.toString()))
+                        .timeout(java.time.Duration.ofSeconds(10))
+                        .build();
 
-                String response = EntityUtils.toString(client.execute(post).getEntity(), StandardCharsets.UTF_8);
+                HttpResponse<String> response = client.send(request,
+                        HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
 
-                return youdaoParseResponse(response);
+                return youdaoParseResponse(response.body());
             } catch (Exception e) {
                 MusTranslate.LOGGER.error("Youdao Translation fail: {}", e.getMessage());
             }
@@ -235,11 +235,7 @@ public class Translator {
             String signStr = app_id + query + salt + app_secret; // appid+q+salt+密钥 的MD5值
             String sign = md5(signStr);
 
-            try (CloseableHttpClient client = HttpClients.createDefault()) {
-                HttpPost post = new HttpPost(Config.COMMON.TRANSLATION_PROVIDER.get().getApiUrl());
-
-                post.setHeader("Content-Type", "application/x-www-form-urlencoded");
-
+            try (HttpClient client = HttpClient.newHttpClient()) {
                 StringBuilder params = new StringBuilder();
                 params.append("q=").append(java.net.URLEncoder.encode(query, StandardCharsets.UTF_8));
                 params.append("&from=").append(from);
@@ -248,12 +244,17 @@ public class Translator {
                 params.append("&salt=").append(salt);
                 params.append("&sign=").append(sign);
 
-                StringEntity entity = new StringEntity(params.toString(), StandardCharsets.UTF_8);
-                post.setEntity(entity);
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(Config.COMMON.TRANSLATION_PROVIDER.get().getApiUrl()))
+                        .header("Content-Type", "application/x-www-form-urlencoded")
+                        .POST(HttpRequest.BodyPublishers.ofString(params.toString()))
+                        .timeout(java.time.Duration.ofSeconds(10))
+                        .build();
 
-                String response = EntityUtils.toString(client.execute(post).getEntity(), StandardCharsets.UTF_8);
+                HttpResponse<String> response = client.send(request,
+                        HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
 
-                return baiduParseResponse(response);
+                return baiduParseResponse(response.body());
             } catch (Exception e) {
                 MusTranslate.LOGGER.error("Baidu Translation fail: {}", e.getMessage());
             }

@@ -3,6 +3,7 @@ package com.muriane.mutran.screen;
 import com.muriane.mutran.MusTranslate;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -27,7 +28,7 @@ public class MuTranSetting {
         private static final KeyMapping GUI_KEY = new KeyMapping(
                 "mutran.key.open_gui",
                 GLFW.GLFW_KEY_UNKNOWN,
-                "mutran.key.category"
+                new KeyMapping.Category(Identifier.fromNamespaceAndPath(MusTranslate.MODID, "main"))
         );
 
         @SubscribeEvent

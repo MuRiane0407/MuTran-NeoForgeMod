@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import java.util.Map;
 import java.util.UUID;
 
-@OnlyIn(Dist.CLIENT)
 @Mixin(BossHealthOverlay.class)
 public interface BossHealthMixinInterface {
     @Accessor("events")

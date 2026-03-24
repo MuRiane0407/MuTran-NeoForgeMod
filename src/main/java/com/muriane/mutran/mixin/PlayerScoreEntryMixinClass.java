@@ -17,7 +17,6 @@ import static com.muriane.mutran.translate.ChatTranslate.ChatTranslateHolder.sen
 import static com.muriane.mutran.translate.OtherVanillaTranslate.ScoreboardTranslate.scoreboardPlayerNameTranslation;
 import static com.muriane.mutran.translate.Translator.translateAsync;
 
-@OnlyIn(Dist.CLIENT)
 @Mixin(PlayerScoreEntry.class)
 public class PlayerScoreEntryMixinClass {
     @Shadow

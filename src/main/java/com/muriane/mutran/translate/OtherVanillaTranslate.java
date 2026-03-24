@@ -1,5 +1,6 @@
 package com.muriane.mutran.translate;
 
+import com.muriane.mutran.MusTranslate;
 import com.muriane.mutran.config.Config;
 import com.muriane.mutran.mixin.BossHealthMixinInterface;
 import com.muriane.mutran.mixin.GuiMixinInterface;
@@ -9,6 +10,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
@@ -37,7 +39,7 @@ public class OtherVanillaTranslate {
         public static final KeyMapping RELOAD_KEY = new KeyMapping(
                 "mutran.key.reload",
                 GLFW.GLFW_KEY_UNKNOWN,
-                "mutran.key.category"
+                new KeyMapping.Category(Identifier.fromNamespaceAndPath(MusTranslate.MODID, "main"))
         );
 
         @SubscribeEvent

@@ -3,6 +3,7 @@ package com.muriane.mutran.translate;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.muriane.mutran.MusTranslate;
 import com.muriane.mutran.config.Config;
 import net.minecraft.client.KeyMapping;
@@ -11,6 +12,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
@@ -119,7 +121,7 @@ public class ItemTranslate {
         public static final KeyMapping TRANSLATE_KEY = new KeyMapping(
                 "mutran.key.translate",
                 GLFW.GLFW_KEY_UNKNOWN,
-                "mutran.key.category"
+                new KeyMapping.Category(Identifier.fromNamespaceAndPath(MusTranslate.MODID, "main"))
         );
 
         @SubscribeEvent
