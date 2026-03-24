@@ -11,3 +11,5 @@ How To Use (如何使用)
 在设置菜单中选择翻译提供商，填写应用数据，再打开需要的功能即可
 
 Select the translation provider in the settings menu, fill in the application data, and turn on the desired function
+
+1.21.4
