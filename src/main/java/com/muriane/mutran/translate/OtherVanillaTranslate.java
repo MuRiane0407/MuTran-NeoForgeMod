@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.muriane.mutran.MusTranslate.KEY_CATEGORY;
 import static com.muriane.mutran.translate.ChatTranslate.ChatTranslateHolder.sendMessageWithSign;
 import static com.muriane.mutran.translate.Translator.translateAsync;
 
@@ -39,7 +40,7 @@ public class OtherVanillaTranslate {
         public static final KeyMapping RELOAD_KEY = new KeyMapping(
                 "mutran.key.reload",
                 GLFW.GLFW_KEY_UNKNOWN,
-                new KeyMapping.Category(Identifier.fromNamespaceAndPath(MusTranslate.MODID, "main"))
+                KEY_CATEGORY
         );
 
         @SubscribeEvent

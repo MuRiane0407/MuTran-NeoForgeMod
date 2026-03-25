@@ -15,6 +15,8 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import org.lwjgl.glfw.GLFW;
 
+import static com.muriane.mutran.MusTranslate.KEY_CATEGORY;
+
 public class MuTranSetting {
     private static ModContainer modContainer = null;
     private static boolean needGrab = false;
@@ -28,7 +30,7 @@ public class MuTranSetting {
         private static final KeyMapping GUI_KEY = new KeyMapping(
                 "mutran.key.open_gui",
                 GLFW.GLFW_KEY_UNKNOWN,
-                new KeyMapping.Category(Identifier.fromNamespaceAndPath(MusTranslate.MODID, "main"))
+                KEY_CATEGORY
         );
 
         @SubscribeEvent

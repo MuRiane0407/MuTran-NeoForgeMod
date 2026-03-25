@@ -3,6 +3,8 @@ package com.muriane.mutran;
 import com.mojang.logging.LogUtils;
 import com.muriane.mutran.config.Config;
 import com.muriane.mutran.screen.MuTranSetting;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -20,6 +22,8 @@ public class MusTranslate {
     public static final String MODID = "mutran";
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
+    public static final KeyMapping.Category KEY_CATEGORY = new KeyMapping.Category(Identifier.fromNamespaceAndPath(MusTranslate.MODID, "main"));
+
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.

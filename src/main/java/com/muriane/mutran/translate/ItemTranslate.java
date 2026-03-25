@@ -42,6 +42,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 
+import static com.muriane.mutran.MusTranslate.KEY_CATEGORY;
 import static com.muriane.mutran.translate.Translator.translateAsync;
 
 public class ItemTranslate {
@@ -121,7 +122,7 @@ public class ItemTranslate {
         public static final KeyMapping TRANSLATE_KEY = new KeyMapping(
                 "mutran.key.translate",
                 GLFW.GLFW_KEY_UNKNOWN,
-                new KeyMapping.Category(Identifier.fromNamespaceAndPath(MusTranslate.MODID, "main"))
+                KEY_CATEGORY
         );
 
         @SubscribeEvent
