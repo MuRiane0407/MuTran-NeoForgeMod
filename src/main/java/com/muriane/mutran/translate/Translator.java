@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import com.muriane.mutran.MusTranslate;
 import com.muriane.mutran.config.Config;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
@@ -24,6 +25,8 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static com.muriane.mutran.translate.ChatTranslate.ChatTranslateHolder.sendMessageWithSign;
 
 public class Translator {
     @EventBusSubscriber
@@ -52,12 +55,19 @@ public class Translator {
 
                         String result = Translator.translate(pair.getA()); // 翻译
 
-                        List<String> splitStringList = splitString(result, pair.getB()); // 根据merge时的数据拆分整个句子
+                        if (result != null){
+                            System.out.print(result+"\n");
+                            List<String> splitStringList = splitString(result, pair.getB()); // 根据merge时的数据拆分整个句子
 
-                        for (int index = 0; index < splitStringList.size() ; index++){
-                            int finalIndex = index;
-                            TranslationCallback callback = callbackList.get(finalIndex);
-                            Minecraft.getInstance().execute(() -> callback.onComplete(splitStringList.get(finalIndex)));
+                            for (int index = 0; index < splitStringList.size() ; index++){
+                                int finalIndex = index;
+                                TranslationCallback callback = callbackList.get(finalIndex);
+                                Minecraft.getInstance().execute(() -> callback.onComplete(splitStringList.get(finalIndex)));
+                            }
+                        }else{
+                            if (Minecraft.getInstance().player != null) {
+                                sendMessageWithSign(Minecraft.getInstance().player, Component.literal(Config.COMMON.TRANSLATION_PROVIDER.get().getDisplayName() + Component.translatable("mutran.error.cant_translate").getString()).withColor(0xFB5454));
+                            }
                         }
                     });
                 }else{
