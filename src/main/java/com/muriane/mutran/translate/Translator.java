@@ -56,7 +56,6 @@ public class Translator {
                         String result = Translator.translate(pair.getA()); // 翻译
 
                         if (result != null){
-                            System.out.print(result+"\n");
                             List<String> splitStringList = splitString(result, pair.getB()); // 根据merge时的数据拆分整个句子
 
                             for (int index = 0; index < splitStringList.size() ; index++){
