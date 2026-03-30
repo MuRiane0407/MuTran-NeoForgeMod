@@ -151,7 +151,7 @@ public class ChatTranslate {
             MutableComponent mutableComponent = Component.literal("");
             mutableComponent.append(component);
             mutableComponent.append(sign);
-            player.displayClientMessage(mutableComponent, false);
+            player.sendSystemMessage(mutableComponent);
         }
     }
 }

@@ -5,7 +5,7 @@ import com.muriane.mutran.config.Config;
 import com.muriane.mutran.mixin.BookEditScreenMixinInterface;
 import com.muriane.mutran.mixin.BookViewScreenMixinInterface;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
@@ -105,12 +105,12 @@ public class BookTranslate {
         }
 
         @Override
-        protected void renderContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-            super.renderContents(guiGraphics, mouseX, mouseX, partialTick);
-            addTranslationString(guiGraphics);
+        protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+            super.extractContents(graphics, mouseX, mouseX, partialTick);
+            addTranslationString(graphics);
         }
 
-        public void addTranslationString(GuiGraphics guiGraphics){
+        public void addTranslationString(GuiGraphicsExtractor graphics){
             Minecraft minecraft = Minecraft.getInstance();
             Screen screen = Minecraft.getInstance().screen;
 
@@ -125,20 +125,20 @@ public class BookTranslate {
                 if (translation.containsKey(page)){
                     if (Config.COMMON.BOOK_TRANSLATION_DISPLAY_MODE.get() == Config.BookTranslationDisplayMode.Expand) {
                         boolean tooNarrow = (screen.width-192)/2 + 144 + 166 > screen.width;
-                        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, BookViewScreen.BOOK_LOCATION, tooNarrow ? screen.width-166 : (screen.width - 192)/2 + 144, 2, 0, 0, 192, 192, 256, 256);
+                        graphics.blit(RenderPipelines.GUI_TEXTURED, BookViewScreen.BOOK_LOCATION, tooNarrow ? screen.width-166 : (screen.width - 192)/2 + 144, 2, 0, 0, 192, 192, 256, 256);
                     }
 
                     int strX = (screen.width - 192) / 2 + 180;
-                    guiGraphics.drawString(minecraft.font, Component.translatable("mutran.translation.translation_info.expand"), (screen.width-192)/2+180, 18, Color.GRAY.getRGB(), false);
+                    graphics.text(minecraft.font, Component.translatable("mutran.translation.translation_info.expand"), (screen.width-192)/2+180, 18, Color.GRAY.getRGB(), false);
                     if (translation.get(page) != null){
                         String[] strings = translation.get(page).split("\n");
                         for (int index = 0 ; index < strings.length ; index++){
                             int strY = 32 + index*9;
-                            guiGraphics.drawString(minecraft.font, strings[index], strX, strY, Color.BLACK.getRGB(), false);
+                            graphics.text(minecraft.font, strings[index], strX, strY, Color.BLACK.getRGB(), false);
                         }
-                        guiGraphics.drawString(minecraft.font, Component.translatable("mutran.translation.translation_info.redo_button"), (screen.width-192)/2+180, 163, Color.GRAY.getRGB(), false);
+                        graphics.text(minecraft.font, Component.translatable("mutran.translation.translation_info.redo_button"), (screen.width-192)/2+180, 163, Color.GRAY.getRGB(), false);
                     }else{
-                        guiGraphics.drawString(minecraft.font, Component.translatable("mutran.translation.translation_info.translating"), (screen.width-192)/2+180, 163, Color.GRAY.getRGB(), false);
+                        graphics.text(minecraft.font, Component.translatable("mutran.translation.translation_info.translating"), (screen.width-192)/2+180, 163, Color.GRAY.getRGB(), false);
                     }
                 }
             }
